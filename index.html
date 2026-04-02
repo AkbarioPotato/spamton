@@ -16,12 +16,11 @@
         }
 
         body {
-            <audio src="https://youtu.be/Nv7-Mud8OR8"></audio>
             background-color: #000;
             color: #fff;
             font-family: 'Comic Sans MS', cursive, sans-serif;
             overflow-x: hidden;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text y="50" font-size="10" fill="rgba(255,255,255,0.05)">[[BIG SHOT]]</text></svg>');
+            transition: background-color 1s ease;
         }
 
         .glitch-text {
@@ -125,6 +124,7 @@
             max-width: 500px;
             text-align: center;
             box-shadow: 0 0 30px var(--spamton-yellow);
+            transition: all 0.5s ease;
         }
 
         .vip-input {
@@ -149,7 +149,6 @@
 
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
 
-        /* Music control floating button */
         #music-toggle {
             position: fixed;
             bottom: 20px;
@@ -162,38 +161,48 @@
             font-weight: bold;
             cursor: pointer;
         }
+
+        .premium-mode {
+            background-color: #1a1a2e !important;
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col" onclick="initMusic()">
 
-    <!-- HIDDEN AUDIO PLAYER -->
-    <iframe id="spamton-audio" width="0" height="0" src="https://www.youtube.com/embed/pMAnfX7v9U4?autoplay=1&loop=1&playlist=pMAnfX7v9U4" frameborder="0" allow="autoplay"></iframe>
-
-    <button id="music-toggle" onclick="toggleMusic()">[[ВЫКЛЮЧИТЬ МУЗЫКУ]]</button>
-
-    <!-- АКБАР БАННЕР -->
-    <div class="akbar-banner" onclick="scamAlert('АКБАР ГОВОРИТ: [[НИКАКИХ ВОЗВРАТОВ]]!!!')">
-        АКБАР ДАЕТ ТЕБЕ <br>
-        <span class="text-4xl text-white underline">[[СКИДКА 999%]]!!!</span><br>
-        <span class="text-xs">ЖМИ ТУТ ЧТОБЫ [СТАТЬ БОГАТЫМ]</span>
+    <!-- Плеер YouTube (Скрытый) -->
+    <div id="player-container" style="position: absolute; left: -9999px;">
+        <div id="player"></div>
     </div>
 
-    <div class="marquee-container overflow-hidden whitespace-nowrap">
+    <button id="music-toggle" onclick="toggleMusic(event)">[[ВКЛЮЧИТЬ МУЗЫКУ]]</button>
+
+    <div id="akbar-banner" class="akbar-banner" onclick="scamAlert('АКБАР ГОВОРИТ: ЭТО [[ЧИСТАЯ СДЕЛКА]]')">
+        АКБАР ДАЕТ ТЕБЕ <br>
+        <span id="discount-text" class="text-4xl text-white underline">[[СКИДКА 999%]]!!!</span><br>
+        <span class="text-xs">СЕРТИФИЦИРОВАННЫЙ [[БОЛЬШОЙ ШОТ]]</span>
+    </div>
+
+    <div id="top-marquee" class="marquee-container overflow-hidden whitespace-nowrap">
         <div class="inline-block animate-marquee uppercase">
              СТАНЬ [[БОЛЬШИМ ШОТОМ]] СЕГОДНЯ!!! АКБАР + СПАМТОН = [[ГИПЕРССЫЛКА ЗАБЛОКИРОВАНА]]!!! ВВЕДИ [[НОМЕР КАРТЫ]] ДЛЯ СЧАСТЬЯ!!!
         </div>
     </div>
 
     <header class="text-center p-12 mt-24">
-        <h1 class="text-5xl md:text-8xl font-bold glitch-text mb-6 uppercase">АКБАР & СПАМТОН</h1>
+        <h1 id="main-title" class="text-5xl md:text-8xl font-bold glitch-text mb-6 uppercase">АКБАР & СПАМТОН</h1>
         
-        <div class="vip-panel transform hover:scale-105 transition-transform">
-            <h2 class="text-2xl font-bold text-yellow-400 mb-2">[[БЛОКИРОВЩИК РЕКЛАМЫ VIP]]</h2>
-            <p class="text-sm text-white mb-4">УСТАЛ ОТ [[ВСПЛЫВАЮЩИХ ОКНО]]? ДАЙ НАМ [[ДЕНЬГИ]] И ОНИ ИСЧЕЗНУТ*!</p>
-            <input type="text" id="fakeCard" class="vip-input" placeholder="НОМЕР [[КРОМЕР-КАРТЫ]]">
-            <input type="text" class="vip-input" placeholder="СУММА (НЕ МЕНЬШЕ 999999)">
-            <button onclick="payForSilence()" class="buy-button mt-4 w-full bg-yellow-400 text-black">ОТКЛЮЧИТЬ [[ЭТОТ ХЛАМ]]</button>
-            <p class="text-[8px] mt-2 opacity-50">*Окна могут вернуться еще более [[БОЛЬШИМИ]]</p>
+        <div id="payment-box" class="vip-panel">
+            <h2 id="vip-title" class="text-2xl font-bold text-yellow-400 mb-2">[[БЛОКИРОВЩИК РЕКЛАМЫ VIP]]</h2>
+            <div id="payment-form">
+                <p class="text-sm text-white mb-4">УСТАЛ ОТ [[ВСПЛЫВАЮЩИХ ОКНО]]? ДАЙ НАМ [[ДЕНЬГИ]] И ОНИ ИСЧЕЗНУТ РЕАЛЬНО!</p>
+                <input type="text" id="fakeCard" class="vip-input" placeholder="НОМЕР [[КРОМЕР-КАРТЫ]]">
+                <input type="text" class="vip-input" placeholder="СУММА (ЛЮБАЯ)">
+                <button onclick="realAdBlock()" class="buy-button mt-4 w-full bg-yellow-400 text-black">ОТКЛЮЧИТЬ [[НАВСЕГДА]]</button>
+            </div>
+            <div id="payment-success" class="hidden text-green-400 font-bold p-4">
+                [[СТАТУС: ПРЕМИУМ АКТИВИРОВАН]]<br>
+                РЕКЛАМА УНИЧТОЖЕНА [[АКБАРОМ]]
+            </div>
         </div>
     </header>
 
@@ -226,22 +235,55 @@
 
     <div id="popups-container"></div>
 
+    <!-- YouTube API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <script>
         let popupsActive = true;
         let spamInterval;
-        let musicOn = true;
+        let player;
+        let musicInitialized = false;
 
-        function toggleMusic() {
-            const iframe = document.getElementById('spamton-audio');
+        // Инициализация YouTube Player
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '0',
+                width: '0',
+                videoId: 'pMAnfX7v9U4', // Spamton Theme
+                playerVars: {
+                    'autoplay': 1,
+                    'loop': 1,
+                    'playlist': 'pMAnfX7v9U4'
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Пытаемся запустить, но браузер может заблочить до клика
+            event.target.playVideo();
+        }
+
+        function initMusic() {
+            if (!musicInitialized && player && player.playVideo) {
+                player.playVideo();
+                document.getElementById('music-toggle').innerText = "[[ВЫКЛЮЧИТЬ МУЗЫКУ]]";
+                musicInitialized = true;
+            }
+        }
+
+        function toggleMusic(e) {
+            e.stopPropagation(); // Чтобы не срабатывал initMusic на body
             const btn = document.getElementById('music-toggle');
-            if (musicOn) {
-                iframe.src = "";
+            if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+                player.pauseVideo();
                 btn.innerText = "[[ВКЛЮЧИТЬ МУЗЫКУ]]";
             } else {
-                iframe.src = "https://www.youtube.com/embed/pMAnfX7v9U4?autoplay=1&loop=1&playlist=pMAnfX7v9U4";
+                player.playVideo();
                 btn.innerText = "[[ВЫКЛЮЧИТЬ МУЗЫКУ]]";
             }
-            musicOn = !musicOn;
         }
 
         function createPopup() {
@@ -256,35 +298,24 @@
             popup.style.left = x + 'px';
             popup.style.top = y + 'px';
             
-            const messages = [
-                "АКБАР ДАЕТ [[СКИДКУ 999%]]!",
-                "ТЫ ХОЧЕШЬ [[БОЛЬШОЙ ШАНС]]?",
-                "КУПИ [КРОМЕР]!",
-                "[[ГИПЕРССЫЛКА ЗАБЛОКИРОВАНА]]",
-                "АКБАР СМОТРИТ",
-                "СТАНЬ [[БОЛЬШИМ ШОТОМ]]"
-            ];
-            
-            const msg = messages[Math.floor(Math.random() * messages.length)];
-            
             popup.innerHTML = `
                 <header>
                     <span>⚠ [[ПРЕДУПРЕЖДЕНИЕ]]</span>
                     <button onclick="this.closest('.popup').remove()">X</button>
                 </header>
                 <div class="p-4 text-black text-xs font-bold bg-[#c0c0c0]">
-                    ${msg}<br><br>
-                    <button class="buy-button text-[10px]" onclick="scamAlert()">ДА!</button>
+                    АКБАР ТРЕБУЕТ ТВОЕГО ВНИМАНИЯ!<br><br>
+                    <button class="buy-button text-[10px]" onclick="scamAlert()">ОК!</button>
                 </div>
             `;
-            
             container.appendChild(popup);
         }
 
-        function payForSilence() {
+        function realAdBlock() {
+            initMusic(); // Гарантируем запуск звука при клике
             const card = document.getElementById('fakeCard').value;
-            if (card.length < 5) {
-                scamAlert('НОМЕР КАРТЫ СЛИШКОМ [[МАЛЕНЬКИЙ]] ДЛЯ АКБАРА!');
+            if (card.length < 3) {
+                scamAlert('АКБАР ТРЕБУЕТ ХОТЯ БЫ [[3 ЦИФРЫ]] ДЛЯ СДЕЛКИ!');
                 return;
             }
 
@@ -292,56 +323,53 @@
             clearInterval(spamInterval);
             document.querySelectorAll('.popup').forEach(p => p.remove());
 
-            const overlay = document.createElement('div');
-            overlay.className = 'fixed inset-0 bg-white z-[99999] flex items-center justify-center p-10 flex-col text-center text-black';
-            overlay.innerHTML = `
-                <h1 class="text-6xl font-bold mb-4">[[ТРАНЗАКЦИЯ УСПЕШНА]]</h1>
-                <p class="text-2xl mb-8 uppercase font-black">АКБАР СПИСАЛ ВСЕ ТВОИ [[КРОМЕРЫ]]!</p>
-                <p class="text-xl">РЕКЛАМА ОТКЛЮЧЕНА НА 3 СЕКУНДЫ...</p>
-                <div class="mt-10 pipis"></div>
-            `;
-            document.body.appendChild(overlay);
+            document.body.classList.add('premium-mode');
+            document.getElementById('payment-form').classList.add('hidden');
+            document.getElementById('payment-success').classList.remove('hidden');
+            
+            // Меняем музыку на спокойную
+            if (player) {
+                player.loadVideoById('5mGf6_p6eMc'); // Спокойный трек
+            }
 
-            setTimeout(() => {
-                overlay.innerHTML = `
-                    <h1 class="text-6xl font-bold mb-4 text-red-600">[[ОШИБКА СИСТЕМЫ]]</h1>
-                    <p class="text-4xl text-black">ТЫ ДУМАЛ ТАК [[ЛЕГКО]] ОТ НАС УЙТИ?!</p>
-                    <p class="text-xl">АКБАР ТРЕБУЕТ БОЛЬШЕ [[РЕКЛАМЫ]]!!!</p>
-                    <button onclick="location.reload()" class="bg-red-600 text-white p-4 mt-4 font-bold">[[ВЕРНУТЬСЯ В АД]]</button>
-                `;
-                popupsActive = true;
-                for(let i=0; i<30; i++) {
-                    setTimeout(createPopup, i * 50);
-                }
-                startSpam();
-            }, 3000);
+            const successOverlay = document.createElement('div');
+            successOverlay.className = 'fixed inset-0 bg-black z-[10000] flex items-center justify-center flex-col text-center';
+            successOverlay.innerHTML = `
+                <h1 class="text-6xl font-bold mb-4" style="color: gold;">[[СДЕЛКА ВЕКА]]</h1>
+                <p class="text-white text-2xl">АКБАР ЛИЧНО ВЫКЛЮЧИЛ [[ЭТОТ МУСОР]]</p>
+                <button onclick="this.parentElement.remove()" class="mt-8 buy-button bg-yellow-400 px-10 py-4">[[НАСЛАЖДАТЬСЯ]]</button>
+            `;
+            document.body.appendChild(successOverlay);
         }
 
         function scamAlert(msg) {
+            initMusic(); // Звук при клике
             const overlay = document.createElement('div');
             overlay.className = 'fixed inset-0 bg-black bg-opacity-95 z-[99999] flex items-center justify-center p-10 flex-col text-center';
             overlay.innerHTML = `
                 <h1 class="text-6xl text-yellow-400 font-bold mb-6 italic glitch-text">${msg || 'СПАСИБО ЗА [[КРОМЕРЫ]]!!'}</h1>
-                <button onclick="this.parentElement.remove()" class="bg-white text-black p-6 text-3xl font-bold border-8 border-pink-500">[[Я ЕЩЕ ЖИВ]]</button>
+                <button onclick="this.parentElement.remove()" class="bg-white text-black p-6 text-3xl font-bold border-8 border-pink-500">[[ПОНЯТНО]]</button>
             `;
             document.body.appendChild(overlay);
         }
 
         function startSpam() {
+            if (spamInterval) clearInterval(spamInterval);
             spamInterval = setInterval(() => {
-                if (document.querySelectorAll('.popup').length < 25) createPopup();
-            }, 3000);
+                if (popupsActive && document.querySelectorAll('.popup').length < 15) {
+                    createPopup();
+                }
+            }, 5000);
         }
 
         window.onload = () => {
             startSpam();
-            for(let i=0; i<3; i++) setTimeout(createPopup, 1000 + (i*500));
         };
 
         const style = document.createElement('style');
         style.textContent = `
             @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-            .animate-marquee { display: inline-block; animation: marquee 10s linear infinite; font-size: 2rem; }
+            .animate-marquee { display: inline-block; animation: marquee 15s linear infinite; font-size: 2rem; }
         `;
         document.head.appendChild(style);
     </script>
