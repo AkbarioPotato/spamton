@@ -20,7 +20,6 @@
             color: #fff;
             font-family: 'Comic Sans MS', cursive, sans-serif;
             overflow-x: hidden;
-            transition: background-color 1s ease;
         }
 
         .glitch-text {
@@ -110,12 +109,6 @@
             cursor: pointer;
         }
 
-        .buy-button:active {
-            border: 2px solid #000;
-            border-right-color: #fff;
-            border-bottom-color: #fff;
-        }
-
         .vip-panel {
             background: #1a1a1a;
             border: 4px solid var(--spamton-yellow);
@@ -124,7 +117,6 @@
             max-width: 500px;
             text-align: center;
             box-shadow: 0 0 30px var(--spamton-yellow);
-            transition: all 0.5s ease;
         }
 
         .vip-input {
@@ -162,23 +154,21 @@
             cursor: pointer;
         }
 
-        .premium-mode {
-            background-color: #1a1a2e !important;
-        }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .animate-marquee { display: inline-block; animation: marquee 12s linear infinite; font-size: 2rem; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col" onclick="initMusic()">
 
-    <!-- Плеер YouTube (Скрытый) -->
     <div id="player-container" style="position: absolute; left: -9999px;">
         <div id="player"></div>
     </div>
 
     <button id="music-toggle" onclick="toggleMusic(event)">[[ВКЛЮЧИТЬ МУЗЫКУ]]</button>
 
-    <div id="akbar-banner" class="akbar-banner" onclick="scamAlert('АКБАР ГОВОРИТ: ЭТО [[ЧИСТАЯ СДЕЛКА]]')">
+    <div id="akbar-banner" class="akbar-banner" onclick="scamAlert('АКБАР ГОВОРИТ: КУПИ ИЛИ [[ПОЖАЛЕЕШЬ]]')">
         АКБАР ДАЕТ ТЕБЕ <br>
-        <span id="discount-text" class="text-4xl text-white underline">[[СКИДКА 999%]]!!!</span><br>
+        <span class="text-4xl text-white underline">[[СКИДКА 999%]]!!!</span><br>
         <span class="text-xs">СЕРТИФИЦИРОВАННЫЙ [[БОЛЬШОЙ ШОТ]]</span>
     </div>
 
@@ -196,7 +186,6 @@
             <div id="payment-form">
                 <p class="text-sm text-white mb-4">УСТАЛ ОТ [[ВСПЛЫВАЮЩИХ ОКНО]]? ДАЙ НАМ [[ДЕНЬГИ]] И ОНИ ИСЧЕЗНУТ РЕАЛЬНО!</p>
                 <input type="text" id="fakeCard" class="vip-input" placeholder="НОМЕР [[КРОМЕР-КАРТЫ]]">
-                <input type="text" class="vip-input" placeholder="СУММА (ЛЮБАЯ)">
                 <button onclick="realAdBlock()" class="buy-button mt-4 w-full bg-yellow-400 text-black">ОТКЛЮЧИТЬ [[НАВСЕГДА]]</button>
             </div>
             <div id="payment-success" class="hidden text-green-400 font-bold p-4">
@@ -235,7 +224,6 @@
 
     <div id="popups-container"></div>
 
-    <!-- YouTube API -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
@@ -244,26 +232,11 @@
         let player;
         let musicInitialized = false;
 
-        // Инициализация YouTube Player
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
-                height: '0',
-                width: '0',
-                videoId: 'pMAnfX7v9U4', // Spamton Theme
-                playerVars: {
-                    'autoplay': 1,
-                    'loop': 1,
-                    'playlist': 'pMAnfX7v9U4'
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
+                height: '0', width: '0', videoId: 'pMAnfX7v9U4',
+                playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': 'pMAnfX7v9U4' }
             });
-        }
-
-        function onPlayerReady(event) {
-            // Пытаемся запустить, но браузер может заблочить до клика
-            event.target.playVideo();
         }
 
         function initMusic() {
@@ -275,7 +248,8 @@
         }
 
         function toggleMusic(e) {
-            e.stopPropagation(); // Чтобы не срабатывал initMusic на body
+            e.stopPropagation();
+            if (!player) return;
             const btn = document.getElementById('music-toggle');
             if (player.getPlayerState() === YT.PlayerState.PLAYING) {
                 player.pauseVideo();
@@ -291,59 +265,37 @@
             const container = document.getElementById('popups-container');
             const popup = document.createElement('div');
             popup.className = 'popup';
-            
-            const x = Math.random() * (window.innerWidth - 260);
-            const y = Math.random() * (window.innerHeight - 200);
-            
-            popup.style.left = x + 'px';
-            popup.style.top = y + 'px';
+            popup.style.left = Math.random() * (window.innerWidth - 260) + 'px';
+            popup.style.top = Math.random() * (window.innerHeight - 200) + 'px';
             
             popup.innerHTML = `
-                <header>
-                    <span>⚠ [[ПРЕДУПРЕЖДЕНИЕ]]</span>
-                    <button onclick="this.closest('.popup').remove()">X</button>
-                </header>
-                <div class="p-4 text-black text-xs font-bold bg-[#c0c0c0]">
-                    АКБАР ТРЕБУЕТ ТВОЕГО ВНИМАНИЯ!<br><br>
-                    <button class="buy-button text-[10px]" onclick="scamAlert()">ОК!</button>
-                </div>
+                <header><span>⚠ [[ПРЕДУПРЕЖДЕНИЕ]]</span><button onclick="this.closest('.popup').remove()">X</button></header>
+                <div class="p-4 text-black text-xs font-bold bg-[#c0c0c0]">АКБАР ГОВОРИТ: КУПИ СЕЙЧАС!</div>
             `;
             container.appendChild(popup);
         }
 
         function realAdBlock() {
-            initMusic(); // Гарантируем запуск звука при клике
+            initMusic();
             const card = document.getElementById('fakeCard').value;
             if (card.length < 3) {
                 scamAlert('АКБАР ТРЕБУЕТ ХОТЯ БЫ [[3 ЦИФРЫ]] ДЛЯ СДЕЛКИ!');
                 return;
             }
 
+            // ТОТАЛЬНОЕ ОТКЛЮЧЕНИЕ СПАМА
             popupsActive = false;
             clearInterval(spamInterval);
-            document.querySelectorAll('.popup').forEach(p => p.remove());
+            document.getElementById('popups-container').innerHTML = '';
 
-            document.body.classList.add('premium-mode');
             document.getElementById('payment-form').classList.add('hidden');
             document.getElementById('payment-success').classList.remove('hidden');
             
-            // Меняем музыку на спокойную
-            if (player) {
-                player.loadVideoById('5mGf6_p6eMc'); // Спокойный трек
-            }
-
-            const successOverlay = document.createElement('div');
-            successOverlay.className = 'fixed inset-0 bg-black z-[10000] flex items-center justify-center flex-col text-center';
-            successOverlay.innerHTML = `
-                <h1 class="text-6xl font-bold mb-4" style="color: gold;">[[СДЕЛКА ВЕКА]]</h1>
-                <p class="text-white text-2xl">АКБАР ЛИЧНО ВЫКЛЮЧИЛ [[ЭТОТ МУСОР]]</p>
-                <button onclick="this.parentElement.remove()" class="mt-8 buy-button bg-yellow-400 px-10 py-4">[[НАСЛАЖДАТЬСЯ]]</button>
-            `;
-            document.body.appendChild(successOverlay);
+            scamAlert('АКБАР ЛИЧНО УДАЛИЛ ВСЮ РЕКЛАМУ! [[ЧИСТАЯ СДЕЛКА]]!');
         }
 
         function scamAlert(msg) {
-            initMusic(); // Звук при клике
+            initMusic();
             const overlay = document.createElement('div');
             overlay.className = 'fixed inset-0 bg-black bg-opacity-95 z-[99999] flex items-center justify-center p-10 flex-col text-center';
             overlay.innerHTML = `
@@ -356,22 +308,13 @@
         function startSpam() {
             if (spamInterval) clearInterval(spamInterval);
             spamInterval = setInterval(() => {
-                if (popupsActive && document.querySelectorAll('.popup').length < 15) {
+                if (popupsActive && document.querySelectorAll('.popup').length < 20) {
                     createPopup();
                 }
-            }, 5000);
+            }, 4000);
         }
 
-        window.onload = () => {
-            startSpam();
-        };
-
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-            .animate-marquee { display: inline-block; animation: marquee 15s linear infinite; font-size: 2rem; }
-        `;
-        document.head.appendChild(style);
+        window.onload = startSpam;
     </script>
 </body>
 </html>
