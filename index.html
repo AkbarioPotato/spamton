@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ПРОДАЖИ [[БОЛЬШОЙ ШАНС]] СПАМТОНА</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap');
+
+        :root {
+            --spamton-pink: #ff00ff;
+            --spamton-yellow: #ffff00;
+            --spamton-blue: #00ffff;
+            --akbar-red: #ff0000;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            overflow-x: hidden;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text y="50" font-size="10" fill="rgba(255,255,255,0.05)">[[BIG SHOT]]</text></svg>');
+        }
+
+        .glitch-text {
+            text-shadow: 2px 2px var(--spamton-pink), -2px -2px var(--spamton-blue);
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+
+        .akbar-banner {
+            position: fixed;
+            top: 20px;
+            left: -15px;
+            z-index: 9999;
+            background: var(--akbar-red);
+            color: yellow;
+            padding: 20px 40px;
+            transform: rotate(-10deg);
+            border: 6px double yellow;
+            font-weight: 900;
+            box-shadow: 15px 15px 0 rgba(0,0,0,0.8);
+            animation: akbar-pulse 0.15s infinite alternate;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        @keyframes akbar-pulse {
+            from { transform: rotate(-10deg) scale(1); filter: brightness(1); }
+            to { transform: rotate(-8deg) scale(1.1); filter: brightness(1.5) hue-rotate(45deg); }
+        }
+
+        .spam-card {
+            border: 4px inset #ccc;
+            background: #fff;
+            color: #000;
+            image-rendering: pixelated;
+        }
+
+        .marquee-container {
+            background: var(--spamton-yellow);
+            color: #000;
+            font-weight: bold;
+            padding: 10px 0;
+            border-bottom: 5px solid var(--spamton-pink);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .popup {
+            position: fixed;
+            background: #c0c0c0;
+            border: 2px solid #fff;
+            border-right-color: #000;
+            border-bottom-color: #000;
+            box-shadow: 2px 2px 0 #888;
+            padding: 2px;
+            z-index: 5000;
+            width: 250px;
+        }
+
+        .popup header {
+            background: linear-gradient(90deg, darkblue, blue);
+            color: white;
+            padding: 3px 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .buy-button {
+            background: #c0c0c0;
+            border: 2px solid #fff;
+            border-right-color: #000;
+            border-bottom-color: #000;
+            padding: 8px 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .buy-button:active {
+            border: 2px solid #000;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .vip-panel {
+            background: #1a1a1a;
+            border: 4px solid var(--spamton-yellow);
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 0 30px var(--spamton-yellow);
+        }
+
+        .vip-input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: #000;
+            border: 2px solid var(--spamton-pink);
+            color: #00f0ff;
+            font-family: monospace;
+        }
+
+        .pipis {
+            width: 30px;
+            height: 40px;
+            background: #00ffff;
+            border-radius: 50% 50% 45% 45%;
+            display: inline-block;
+            margin: 5px;
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+
+        /* Music control floating button */
+        #music-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            background: var(--spamton-pink);
+            color: white;
+            border: 4px outset white;
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- HIDDEN AUDIO PLAYER -->
+    <iframe id="spamton-audio" width="0" height="0" src="https://www.youtube.com/embed/pMAnfX7v9U4?autoplay=1&loop=1&playlist=pMAnfX7v9U4" frameborder="0" allow="autoplay"></iframe>
+
+    <button id="music-toggle" onclick="toggleMusic()">[[ВЫКЛЮЧИТЬ МУЗЫКУ]]</button>
+
+    <!-- АКБАР БАННЕР -->
+    <div class="akbar-banner" onclick="scamAlert('АКБАР ГОВОРИТ: [[НИКАКИХ ВОЗВРАТОВ]]!!!')">
+        АКБАР ДАЕТ ТЕБЕ <br>
+        <span class="text-4xl text-white underline">[[СКИДКА 999%]]!!!</span><br>
+        <span class="text-xs">ЖМИ ТУТ ЧТОБЫ [СТАТЬ БОГАТЫМ]</span>
+    </div>
+
+    <div class="marquee-container overflow-hidden whitespace-nowrap">
+        <div class="inline-block animate-marquee uppercase">
+             СТАНЬ [[БОЛЬШИМ ШОТОМ]] СЕГОДНЯ!!! АКБАР + СПАМТОН = [[ГИПЕРССЫЛКА ЗАБЛОКИРОВАНА]]!!! ВВЕДИ [[НОМЕР КАРТЫ]] ДЛЯ СЧАСТЬЯ!!!
+        </div>
+    </div>
+
+    <header class="text-center p-12 mt-24">
+        <h1 class="text-5xl md:text-8xl font-bold glitch-text mb-6 uppercase">АКБАР & СПАМТОН</h1>
+        
+        <div class="vip-panel transform hover:scale-105 transition-transform">
+            <h2 class="text-2xl font-bold text-yellow-400 mb-2">[[БЛОКИРОВЩИК РЕКЛАМЫ VIP]]</h2>
+            <p class="text-sm text-white mb-4">УСТАЛ ОТ [[ВСПЛЫВАЮЩИХ ОКНО]]? ДАЙ НАМ [[ДЕНЬГИ]] И ОНИ ИСЧЕЗНУТ*!</p>
+            <input type="text" id="fakeCard" class="vip-input" placeholder="НОМЕР [[КРОМЕР-КАРТЫ]]">
+            <input type="text" class="vip-input" placeholder="СУММА (НЕ МЕНЬШЕ 999999)">
+            <button onclick="payForSilence()" class="buy-button mt-4 w-full bg-yellow-400 text-black">ОТКЛЮЧИТЬ [[ЭТОТ ХЛАМ]]</button>
+            <p class="text-[8px] mt-2 opacity-50">*Окна могут вернуться еще более [[БОЛЬШИМИ]]</p>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="spam-card p-6 flex flex-col items-center">
+            <div class="w-full h-40 bg-black mb-4 flex items-center justify-center border-2 border-black">
+                <span class="text-6xl text-white">🔑</span>
+            </div>
+            <h2 class="text-2xl font-bold uppercase mb-2">[[КЛЮЧГЕН]]</h2>
+            <p class="text-green-600 font-bold text-2xl mb-4">499 КРОМЕР</p>
+            <button class="buy-button w-full" onclick="scamAlert()">КУПИТЬ</button>
+        </div>
+        <div class="spam-card p-6 flex flex-col items-center border-4 border-pink-500 shadow-xl">
+            <div class="w-full h-40 bg-pink-100 mb-4 flex items-center justify-center border-2 border-black">
+                <span class="text-7xl">💎</span>
+            </div>
+            <h2 class="text-2xl font-bold uppercase mb-2 text-pink-600">[[ГИПЕРССЫЛКА]]</h2>
+            <p class="text-green-600 font-bold text-2xl mb-4">1997 КРОМЕР</p>
+            <button class="buy-button w-full" onclick="scamAlert()">БРАТЬ!</button>
+        </div>
+        <div class="spam-card p-6 flex flex-col items-center">
+            <div class="w-full h-40 bg-gray-300 mb-4 flex items-center justify-center border-2 border-black">
+                <div class="pipis"></div>
+            </div>
+            <h2 class="text-2xl font-bold uppercase mb-2">[[PIPIS]]</h2>
+            <p class="text-green-600 font-bold text-2xl mb-4">ДУША</p>
+            <button class="buy-button w-full" onclick="scamAlert()">СЪЕСТЬ</button>
+        </div>
+    </main>
+
+    <div id="popups-container"></div>
+
+    <script>
+        let popupsActive = true;
+        let spamInterval;
+        let musicOn = true;
+
+        function toggleMusic() {
+            const iframe = document.getElementById('spamton-audio');
+            const btn = document.getElementById('music-toggle');
+            if (musicOn) {
+                iframe.src = "";
+                btn.innerText = "[[ВКЛЮЧИТЬ МУЗЫКУ]]";
+            } else {
+                iframe.src = "https://www.youtube.com/embed/pMAnfX7v9U4?autoplay=1&loop=1&playlist=pMAnfX7v9U4";
+                btn.innerText = "[[ВЫКЛЮЧИТЬ МУЗЫКУ]]";
+            }
+            musicOn = !musicOn;
+        }
+
+        function createPopup() {
+            if (!popupsActive) return;
+            const container = document.getElementById('popups-container');
+            const popup = document.createElement('div');
+            popup.className = 'popup';
+            
+            const x = Math.random() * (window.innerWidth - 260);
+            const y = Math.random() * (window.innerHeight - 200);
+            
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+            
+            const messages = [
+                "АКБАР ДАЕТ [[СКИДКУ 999%]]!",
+                "ТЫ ХОЧЕШЬ [[БОЛЬШОЙ ШАНС]]?",
+                "КУПИ [КРОМЕР]!",
+                "[[ГИПЕРССЫЛКА ЗАБЛОКИРОВАНА]]",
+                "АКБАР СМОТРИТ",
+                "СТАНЬ [[БОЛЬШИМ ШОТОМ]]"
+            ];
+            
+            const msg = messages[Math.floor(Math.random() * messages.length)];
+            
+            popup.innerHTML = `
+                <header>
+                    <span>⚠ [[ПРЕДУПРЕЖДЕНИЕ]]</span>
+                    <button onclick="this.closest('.popup').remove()">X</button>
+                </header>
+                <div class="p-4 text-black text-xs font-bold bg-[#c0c0c0]">
+                    ${msg}<br><br>
+                    <button class="buy-button text-[10px]" onclick="scamAlert()">ДА!</button>
+                </div>
+            `;
+            
+            container.appendChild(popup);
+        }
+
+        function payForSilence() {
+            const card = document.getElementById('fakeCard').value;
+            if (card.length < 5) {
+                scamAlert('НОМЕР КАРТЫ СЛИШКОМ [[МАЛЕНЬКИЙ]] ДЛЯ АКБАРА!');
+                return;
+            }
+
+            popupsActive = false;
+            clearInterval(spamInterval);
+            document.querySelectorAll('.popup').forEach(p => p.remove());
+
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 bg-white z-[99999] flex items-center justify-center p-10 flex-col text-center text-black';
+            overlay.innerHTML = `
+                <h1 class="text-6xl font-bold mb-4">[[ТРАНЗАКЦИЯ УСПЕШНА]]</h1>
+                <p class="text-2xl mb-8 uppercase font-black">АКБАР СПИСАЛ ВСЕ ТВОИ [[КРОМЕРЫ]]!</p>
+                <p class="text-xl">РЕКЛАМА ОТКЛЮЧЕНА НА 3 СЕКУНДЫ...</p>
+                <div class="mt-10 pipis"></div>
+            `;
+            document.body.appendChild(overlay);
+
+            setTimeout(() => {
+                overlay.innerHTML = `
+                    <h1 class="text-6xl font-bold mb-4 text-red-600">[[ОШИБКА СИСТЕМЫ]]</h1>
+                    <p class="text-4xl text-black">ТЫ ДУМАЛ ТАК [[ЛЕГКО]] ОТ НАС УЙТИ?!</p>
+                    <p class="text-xl">АКБАР ТРЕБУЕТ БОЛЬШЕ [[РЕКЛАМЫ]]!!!</p>
+                    <button onclick="location.reload()" class="bg-red-600 text-white p-4 mt-4 font-bold">[[ВЕРНУТЬСЯ В АД]]</button>
+                `;
+                popupsActive = true;
+                for(let i=0; i<30; i++) {
+                    setTimeout(createPopup, i * 50);
+                }
+                startSpam();
+            }, 3000);
+        }
+
+        function scamAlert(msg) {
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-95 z-[99999] flex items-center justify-center p-10 flex-col text-center';
+            overlay.innerHTML = `
+                <h1 class="text-6xl text-yellow-400 font-bold mb-6 italic glitch-text">${msg || 'СПАСИБО ЗА [[КРОМЕРЫ]]!!'}</h1>
+                <button onclick="this.parentElement.remove()" class="bg-white text-black p-6 text-3xl font-bold border-8 border-pink-500">[[Я ЕЩЕ ЖИВ]]</button>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function startSpam() {
+            spamInterval = setInterval(() => {
+                if (document.querySelectorAll('.popup').length < 25) createPopup();
+            }, 3000);
+        }
+
+        window.onload = () => {
+            startSpam();
+            for(let i=0; i<3; i++) setTimeout(createPopup, 1000 + (i*500));
+        };
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+            .animate-marquee { display: inline-block; animation: marquee 10s linear infinite; font-size: 2rem; }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
